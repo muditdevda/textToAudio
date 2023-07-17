@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
 
 public class reading {
 	private static String str ;
@@ -31,16 +32,20 @@ public class reading {
 		WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-        driver.get("https://micmonster.com/text-to-speech/hindi-india/");
+        driver.get("https://micmonster.com/text-to-speech/");
         int loopBreaker = stringforaudio.length()/300;
         int startingIndex = 0; 
         int endIndex = 300; 
         int tempendIndex;
+        String subset;
+        //endIndex = 
         for (int i=0;i<=loopBreaker;i++){
         	if (stringforaudio.length()>=endIndex) {
+        		subset = stringforaudio.substring(0, endIndex);
+        		endIndex = subset.lastIndexOf(" ");
         		navigateAndGenerateAudio(driver,stringforaudio,startingIndex,endIndex);
         		driver.navigate().refresh();
-            	startingIndex = startingIndex +300;
+            	startingIndex = endIndex +1;
             	endIndex = endIndex + 300;
         	}
         	else if (endIndex > stringforaudio.length()) {
@@ -53,6 +58,12 @@ public class reading {
 	}
 	
 	public static void navigateAndGenerateAudio(WebDriver driver,String textforaudio,int startIndex, int endIndex) throws InterruptedException {
+		Select languages = new Select(driver.findElement(By.xpath("//select[@id='languages']")));
+//		languages.selectByVisibleText(textforaudio)
+		languages.selectByVisibleText("Hindi (India)");
+		Thread.sleep(1000);
+		System.out.println("printing====");
+		System.out.println(textforaudio.substring(startIndex, endIndex));
 		driver.findElement(By.xpath("//textarea[@class='text-area mt-2']")).sendKeys(textforaudio.substring(startIndex, endIndex));
 		driver.findElement(By.xpath("//button[@class='btn primary-btn bg-white mr-2']")).click();
 		Thread.sleep(2000);
